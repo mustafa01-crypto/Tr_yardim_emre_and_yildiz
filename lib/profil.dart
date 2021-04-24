@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ import 'package:vscode1/yaziEkle.dart';
 import 'UygulamaTanitim.dart';
 import 'anaSayfa.dart';
 import 'login.dart';
-
+import 'website.dart';
 
 class ProfilEkran extends StatelessWidget {
   @override
@@ -16,7 +15,11 @@ class ProfilEkran extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue.shade500,
-        title: Text("Benim Yazılarım",style: GoogleFonts.varela(color: Colors.white,fontWeight: FontWeight.w400,fontSize: 20)),
+        title: Text("Benim Yazılarım",
+            style: GoogleFonts.varela(
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+                fontSize: 20)),
         actions: <Widget>[
           IconButton(
               tooltip: 'AnaSayfa',
@@ -44,11 +47,27 @@ class ProfilEkran extends StatelessWidget {
         child: ListView(
           children: [
             DrawerHeader(
-              child: Text("MENU"),
-              decoration: BoxDecoration(color: Colors.blue.shade600),
+              child: Text(""),
+              decoration: BoxDecoration(
+                  //color: Colors.grey,
+                  image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: AssetImage('assets/draver3.jpeg'))),
+            ),
+            Divider(
+              thickness: 2,
+              color: Colors.grey.shade800,
+              height: 5,
             ),
             ListTile(
-              title: Text('Video'),
+              leading: Icon(
+                Icons.play_circle_fill_sharp,
+                color: Colors.blue,
+              ),
+              title: Text(
+                'Uygulama Tanıtım Videosu',
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
               onTap: () {
                 Navigator.pushAndRemoveUntil(
                     context,
@@ -57,7 +76,14 @@ class ProfilEkran extends StatelessWidget {
               },
             ),
             ListTile(
-              title: Text('Ek Bilgiler'),
+              leading: Icon(
+                Icons.book,
+                color: Colors.red.shade800,
+              ),
+              title: Text(
+                'Ek Bilgiler',
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
               onTap: () {
                 Navigator.pushAndRemoveUntil(
                     context,
@@ -65,9 +91,22 @@ class ProfilEkran extends StatelessWidget {
                     (Route<dynamic> route) => true);
               },
             ),
-            
-            
-            
+            ListTile(
+              leading: Icon(
+                Icons.language,
+                color: Colors.blue,
+              ),
+              title: Text(
+                'Tekno Çocuk',
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => WebSite()),
+                    (Route<dynamic> route) => true);
+              },
+            ),
           ],
         ),
       ),
@@ -85,7 +124,6 @@ class ProfilEkran extends StatelessWidget {
       body: KullaniciYazilari(),
     );
   }
- 
 }
 
 class KullaniciYazilari extends StatelessWidget {
@@ -105,9 +143,8 @@ class KullaniciYazilari extends StatelessWidget {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Center(child: CircularProgressIndicator());
         }
-
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             return SafeArea(
@@ -119,52 +156,43 @@ class KullaniciYazilari extends StatelessWidget {
                   children: [
                     Container(
                       width: double.infinity,
-                      padding:EdgeInsets.all(3.0),
+                      padding: EdgeInsets.all(3.0),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)),
-                          color: Colors.blue.shade600
-                      ),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15)),
+                          color: Colors.blue.shade600),
                       child: IntrinsicHeight(
                         child: Row(
                           children: [
-                            Expanded(
-                                child: new Text(
-                              document.data()['baslik'],
-                                    style: GoogleFonts.varela(color: Colors.white,fontWeight: FontWeight.w400,fontSize: 15)
-                            )),
+                            kisaExpanded(document, 'baslik'),
                             VerticalDivider(
                               thickness: 2,
                               color: Color(0xFFF6F4F4),
                             ),
-                            Expanded(
-                                child: new Text(document.data()['tarih'],
-                                    style: GoogleFonts.varela(color: Colors.white,fontWeight: FontWeight.w400,fontSize: 15))),
+                            kisaExpanded(document, 'tarih')
                           ],
                         ),
                       ),
                     ),
                     Container(
                       width: double.infinity,
-                      padding:EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15)),
-                          color: Colors.blue.shade500,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(15)),
+                        color: Colors.blue.shade500,
                       ),
                       child: IntrinsicHeight(
                         child: Row(
                           children: [
-                            Expanded(
-                                child: new Text(
-                              document.data()['icerik'],
-                              style: GoogleFonts.varela(color: Colors.white,fontWeight: FontWeight.w400,fontSize: 15),
-                            )),
+                            kisaExpanded(document, 'icerik'),
                             VerticalDivider(
                               thickness: 2,
                               color: Color(0xFFF6F4F4),
                             ),
-                            Expanded(
-                                child: new Text(document.data()['adres'],
-                                    style: GoogleFonts.varela(color: Colors.white,fontWeight: FontWeight.w400,fontSize: 15))),
+                            kisaExpanded(document, 'adres')
                           ],
                         ),
                       ),
@@ -177,5 +205,14 @@ class KullaniciYazilari extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget kisaExpanded(dynamic document, String doc) {
+    return Expanded(
+        child: new Text(document.data()[doc],
+            style: GoogleFonts.varela(
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+                fontSize: 15)));
   }
 }

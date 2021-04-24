@@ -8,6 +8,7 @@ class AnaSayfa extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xFFCEFBFA),
         body: TumYazilar(),
       ),
     );
@@ -17,18 +18,19 @@ class AnaSayfa extends StatelessWidget {
 class TumYazilar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('Yazilar');
+    Query blogYazilari = FirebaseFirestore.instance
+        .collection('Yazilar')
+        .orderBy('tarih', descending: true);
 
     return StreamBuilder<QuerySnapshot>(
-      stream: users.snapshots(),
+      stream: blogYazilari.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Center(child: CircularProgressIndicator());
         }
 
         return new ListView(
@@ -56,25 +58,12 @@ class TumYazilar extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: new Text(
-                                document.data()['baslik'],
-                                style: GoogleFonts.varela(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 15),
-                              ),
-                            ),
+                            kisaExpanded2(document, 'baslik'),
                             VerticalDivider(
                               thickness: 2,
                               color: Color(0xFFF6F4F4),
                             ),
-                            Expanded(
-                                child: new Text(document.data()['tarih'],
-                                    style: GoogleFonts.varela(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15))),
+                            kisaExpanded2(document, 'tarih')
                           ],
                         ),
                       ),
@@ -93,25 +82,12 @@ class TumYazilar extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: new Text(
-                                document.data()['icerik'],
-                                style: GoogleFonts.varela(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 15),
-                              ),
-                            ),
+                            kisaExpanded2(document, 'icerik'),
                             VerticalDivider(
                               thickness: 2,
                               color: Color(0xFFF6F4F4),
                             ),
-                            Expanded(
-                                child: new Text(document.data()['adres'],
-                                    style: GoogleFonts.varela(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15))),
+                            kisaExpanded2(document, 'adres')
                           ],
                         ),
                       ),
@@ -124,5 +100,14 @@ class TumYazilar extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget kisaExpanded2(dynamic document, String doc) {
+    return Expanded(
+        child: new Text(document.data()[doc],
+            style: GoogleFonts.varela(
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+                fontSize: 15)));
   }
 }
